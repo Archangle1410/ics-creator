@@ -1,0 +1,28 @@
+name: Update Calendar
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Python packages
+        run: pip install requests icalendar
+
+      - name: Run filter script
+        run: python filter.py
+
+      - name: Commit updated calendar
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add filtered_deakin_calendar.ics
+          git commit -m "Update calendar" || echo "No changes"
+          git push
